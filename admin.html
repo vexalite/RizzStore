@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.4/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body>
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table id="productTable" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-4 py-3 bg-gray-50 dark:bg-gray-800">
+                    Product ID
+                </th>
+                <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-300">
+                    Product Name
+                </th>
+                <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                    Price
+                </th>
+                <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-300">
+                    Category
+                </th>
+                <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                    Operations
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+  <script>
+    
+    fetch('https://fakestoreapi.com/products')
+      .then(response => response.json())
+      .then(products => {
+        
+        const tbody = document.querySelector('#productTable tbody');
+        products.forEach(product => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+          <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th scope="row" class="px-6 py-4 text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800">
+                    ${product.id}
+                </th>
+                <td class="px-6 py-4 bg-gray-50 text-gray-900 dark:bg-gray-300">
+                    ${product.title}
+                </td>
+                <td class="px-6 py-4 bg-gray-50 text-white dark:bg-gray-800">
+                    $${product.price}
+                </td>
+                <td class="px-6 py-4 bg-gray-50 text-gray-900 dark:bg-gray-300">
+                    ${product.category}
+                </td>
+            </tr>
+            <td class="px-6 py-3 bg-gray-50 dark:bg-gray-800">
+              <button class="text-white hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 my-2 text-center mr-3 md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onclick="editProduct(${product.id})">Edit</button>
+              <button class="text-white hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onclick="deleteProduct(${product.id})">Delete</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      })
+      .catch(error => console.error('Error fetching data:', error));
+
+
+
+      function editProduct(id) {
+      const title = prompt('Enter new title:');
+      const price = prompt('Enter new price:');
+      const category = prompt('Enter new category:');
+    
+      fetch(`https://fakestoreapi.com/products/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(editProduct)
+  })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error(`Failed to update product with ID ${id}`);
+      }
+    })
+    .then(data => {
+      alert(`Product with ID ${id} updated successfully. Product with ID ${id} edited with new values: Title: ${title}, Price: ${price}, Category: ${category}`);
+    })
+    .catch(error => console.error(`Error updating product with ID ${id}:`, error)); 
+
+    }
+
+
+
+function deleteProduct(id) {
+  fetch(`https://fakestoreapi.com/products/${id}`, {
+    method: 'DELETE'
+  })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error(`Failed to delete product with ID ${id}`);
+      }
+    })
+    .then(data => {
+      alert(`Product with ID ${id} deleted successfully. Response: ${JSON.stringify(data)}`);
+    })
+    .catch(error => console.error(`Error deleting product with ID ${id}:`, error));
+}
+
+  </script>
+</body>
+</html>
